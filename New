@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yêu Anh Vệ</title>
+  <!-- Nhúng Google Font kiểu dáng RockStone -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #030712;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Thẻ canvas chứa hiệu ứng ngôi sao vũ trụ */
+    #space-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Container căn giữa dòng chữ và chú thích */
+    .content-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      pointer-events: none;
+    }
+
+    /* Dòng chữ chính kiểu RockStone nghiêng */
+    .animated-text {
+      pointer-events: auto;
+      font-family: 'Black Ops One', cursive, sans-serif;
+      font-style: italic;
+      text-transform: uppercase;
+      font-size: 5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ff3366;
+      cursor: pointer;
+      user-select: none;
+      text-shadow: 0 0 20px rgba(255, 51, 102, 0.6),
+                   0 0 40px rgba(255, 51, 102, 0.4);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s, text-shadow 0.3s;
+      display: inline-block;
+    }
+
+    /* Hiệu ứng nhấp to nhấp nhỏ (pulse) khi di chuột vào */
+    .animated-text:hover {
+      animation: pulse 0.7s infinite ease-in-out alternate;
+      color: #ff6699;
+      text-shadow: 0 0 30px rgba(255, 102, 153, 0.9),
+                   0 0 60px rgba(255, 51, 102, 0.7),
+                   0 0 90px rgba(255, 51, 102, 0.5);
+    }
+
+    /* Phần chú thích liên kết Facebook */
+    .caption-box {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      padding: 10px 20px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .caption-box:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 51, 102, 0.5);
+    }
+
+    .fb-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .fb-link:hover {
+      color: #ff6699;
+      text-decoration: underline;
+    }
+
+    /* Định nghĩa chuyển động phóng to/thu nhỏ giữ nguyên độ nghiêng */
+    @keyframes pulse {
+      0% {
+        transform: scale(1) skewX(-5deg);
+      }
+      100% {
+        transform: scale(1.35) skewX(-5deg);
+      }
+    }
+
+    /* Điều chỉnh cho màn hình di động */
+    @media (max-width: 640px) {
+      .animated-text {
+        font-size: 2.3rem;
+      }
+      .caption-box {
+        font-size: 0.8rem;
+        padding: 8px 14px;
+        max-width: 90%;
+        text-align: center;
+        word-break: break-all;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1) skewX(-5deg);
+        }
+        100% {
+          transform: scale(1.18) skewX(-5deg);
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Vũ Trụ -->
+  <canvas id="space-canvas"></canvas>
+
+  <!-- Container chứa Dòng chữ & Chú thích -->
+  <div class="content-container">
+    <h1 class="animated-text">YÊU ANH VỆ ❤️</h1>
+    
+    <!-- Chú thích liên kết Facebook -->
+    <div class="caption-box">
+      Facebook anh: 
+      <a class="fb-link" href="https://www.facebook.com/huy.duong.906469?locale=vi_VN" target="_blank" rel="noopener noreferrer">
+        https://www.facebook.com/huy.duong.906469
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('space-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let stars = [];
+    const numStars = 200;
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Star {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speed = Math.random() * 3 + 1;
+        this.length = Math.random() * 15 + 5;
+        this.opacity = Math.random() * 0.8 + 0.2;
+      }
+
+      update() {
+        this.x += this.speed * 1.5;
+        this.y += this.speed;
+
+        if (this.x > width || this.y > height) {
+          if (Math.random() > 0.5) {
+            this.x = Math.random() * width;
+            this.y = -10;
+          } else {
+            this.x = -10;
+            this.y = Math.random() * height;
+          }
+          this.speed = Math.random() * 3 + 1;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        ctx.lineWidth = this.size;
+        ctx.lineCap = 'round';
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.length * 1.2, this.y - this.length);
+        ctx.stroke();
+      }
+    }
+
+    for (let i = 0; i < numStars; i++) {
+      stars.push(new Star());
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.3)';
+      ctx.fillRect(0, 0, width, height);
+
+      stars.forEach(star => {
+        star.update();
+        star.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
